@@ -122,6 +122,12 @@
     <div>
         <h1>TCG Card PDF Generator</h1>
         <select name="sets" id="sets" class="hidden"></select>
+        <label>
+            <input type="checkbox" id="showEnchanted"> Show Enchanted Cards
+        </label>
+        <label>
+            <input type="checkbox" id="showPromo"> Show promo Cards
+        </label>
         <button id="printButton" class="hidden">Generate PDF</button>
     </div>
 </div>
@@ -134,6 +140,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
         const setsSelect = document.getElementById('sets');
+        const showEnchanted = document.getElementById('showEnchanted');
+        const showPromo = document.getElementById('showPromo');
         const cardsContainer = document.getElementById('cardsContainer');
         const printButton = document.getElementById('printButton');
 
@@ -171,7 +179,18 @@
                 fullGrayscale = true;
             }
 
+            const showEnchantedCards = showEnchanted.checked;
+            const showPromoCards = showPromo.checked;
+
             cards.forEach(card => {
+                if (!showEnchantedCards && card.rarity === 'Enchanted') {
+                    return;
+                }
+
+                if (!showPromoCards && card.rarity === 'Promo') {
+                    return;
+                }
+
                 const cardElement = document.createElement('div');
                 cardElement.classList.add('card')
                 if (card.type.includes('Location')) {
@@ -198,15 +217,12 @@
             });
         }
 
-        await addSetsToSelect();
-
         printButton.addEventListener('click', () => {
             window.print();
         });
 
-        setsSelect.addEventListener('change', async (event) => {
-            // Get the selected set value
-            const selectedSet = event.target.value
+        const selectSet = async () => {
+            const selectedSet = setsSelect.value;
 
             // Clear the cards container
             cardsContainer.innerHTML = ''
@@ -216,7 +232,16 @@
             }
 
             await renderSet(selectedSet)
-        })
+        }
+
+        showEnchanted.addEventListener('change', selectSet)
+
+        showPromo.addEventListener('change', selectSet)
+
+        setsSelect.addEventListener('change', selectSet)
+
+        await addSetsToSelect()
+            .then(() => selectSet());
     });
 </script>
 </body>
