@@ -109,6 +109,24 @@
             text-align: center;
         }
 
+        .delete-button {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 5px;
+            width: 25px;
+            height: 25px;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .delete-button:hover {
+            background-color: #cc0000;
+        }
+
         /* Ensure only the card is printed */
         @media print {
             .display-only {
@@ -197,6 +215,11 @@
                     cardElement.classList.add('location');
                 }
 
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'x';
+                deleteButton.classList.add('delete-button');
+                deleteButton.classList.add('display-only');
+
                 const imgElement = document.createElement('img');
                 imgElement.src = card.image_uris.digital.large;
 
@@ -213,7 +236,13 @@
                 grayscaleMask.appendChild(grayscaleImg);
                 cardElement.appendChild(imgElement);
                 cardElement.appendChild(grayscaleMask);
+                cardElement.appendChild(deleteButton);
                 cardsContainer.appendChild(cardElement);
+
+                cardElement.addEventListener('click', () => {
+                    // Remove the card from the container
+                    cardElement.remove();
+                });
             });
         }
 
