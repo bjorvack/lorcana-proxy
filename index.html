@@ -130,6 +130,11 @@
 
         /* Ensure only the card is printed */
         @media print {
+            body{
+                -webkit-print-color-adjust:exact !important;
+                print-color-adjust:exact !important;
+            }
+
             .display-only {
                 display: none;
             }
