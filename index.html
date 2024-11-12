@@ -1,289 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TCG Card PDF Generator</title>
     <style>
-        /* General styles */
+      /* General styles */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      #cardsContainer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .card {
+        width: 63mm;
+        height: 88mm;
+        position: relative;
+        page-break-inside: avoid;
+        border: solid 1px #000;
+        background-color: #000;
+      }
+
+      .card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Grayscale mask */
+      .card .grayscale-mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .card .grayscale-mask img {
+        filter: grayscale(100%);
+        clip-path: polygon(0 0, 100% 0, 100% 53%, 0 53%);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .card .grayscale-mask.full-grayscale-mask img {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+
+      .card.location .grayscale-mask img {
+        /* Clip 50% from the right off the image instead */
+        clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+      }
+
+      .card.location .grayscale-mask.full-grayscale-mask img {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+
+      .display-only {
+        display: flex;
+        justify-content: center;
+      }
+
+      .display-only > div {
+        width: min(100%, 800px);
+        margin: 0 1rem;
+      }
+
+      select {
+        display: block;
+        padding: 0.5rem;
+        width: 100%;
+        margin: 1rem 0;
+        border-radius: 2px;
+      }
+
+      button {
+        display: block;
+        padding: 0.5rem;
+        width: 100%;
+        margin: 1rem 0;
+
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 2px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      .delete-button {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background-color: #ff0000;
+        color: #fff;
+        border: none;
+        padding: 5px;
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+        margin: 0;
+      }
+
+      .delete-button:hover {
+        background-color: #cc0000;
+      }
+
+      /* Ensure only the card is printed */
+      @media print {
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        #cardsContainer {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .card {
-            width: 63mm;
-            height: 88mm;
-            position: relative;
-            page-break-inside: avoid;
-            border: solid 1px #000;
-            background-color: #000;
-        }
-
-        .card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Grayscale mask */
-        .card .grayscale-mask {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .card .grayscale-mask img {
-            filter: grayscale(100%);
-            clip-path: polygon(0 0, 100% 0, 100% 53%, 0 53%);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .card .grayscale-mask.full-grayscale-mask img {
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-        }
-
-        .card.location .grayscale-mask img {
-            /* Clip 50% from the right off the image instead */
-            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
-        }
-
-        .card.location .grayscale-mask.full-grayscale-mask img {
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
 
         .display-only {
-            display: flex;
-            justify-content: center;
+          display: none;
         }
 
-        .display-only > div {
-            width: min(100%, 800px);
-            margin: 0 1rem;
+        .card {
+          background-color: #000;
         }
 
-        select {
-            display: block;
-            padding: .5rem;
-            width: 100%;
-            margin: 1rem 0;
-            border-radius: 2px;
+        @page {
+          margin: 1cm 0;
         }
-
-        button {
-            display: block;
-            padding: .5rem;
-            width: 100%;
-            margin: 1rem 0;
-            
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 2px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .delete-button {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background-color: #ff0000;
-            color: #fff;
-            border: none;
-            padding: 5px;
-            width: 25px;
-            height: 25px;
-            font-size: 12px;
-            margin: 0;
-        }
-
-        .delete-button:hover {
-            background-color: #cc0000;
-        }
-
-        /* Ensure only the card is printed */
-        @media print {
-            body{
-                -webkit-print-color-adjust:exact !important;
-                print-color-adjust:exact !important;
-            }
-
-            .display-only {
-                display: none;
-            }
-
-            .card {
-                background-color: #000;
-            }
-
-            @page { margin: 1cm 0; }
-        }
+      }
     </style>
-</head>
-<body>
-<div class="display-only">
-    <div>
+  </head>
+  <body>
+    <div class="display-only">
+      <div>
         <h1>TCG Card PDF Generator</h1>
         <select name="sets" id="sets" class="hidden"></select>
         <label>
-            <input type="checkbox" id="showEnchanted"> Show Enchanted Cards
+          <input type="checkbox" id="showEnchanted" /> Show Enchanted Cards
         </label>
         <label>
-            <input type="checkbox" id="showPromo"> Show promo Cards
+          <input type="checkbox" id="showPromo" /> Show promo Cards
         </label>
         <button id="printButton" class="hidden">Generate PDF</button>
+      </div>
     </div>
-</div>
 
+    <div id="cardsContainer">
+      <!-- Cards will be injected here -->
+    </div>
 
-<div id="cardsContainer">
-    <!-- Cards will be injected here -->
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', async function() {
-        const setsSelect = document.getElementById('sets');
-        const showEnchanted = document.getElementById('showEnchanted');
-        const showPromo = document.getElementById('showPromo');
-        const cardsContainer = document.getElementById('cardsContainer');
-        const printButton = document.getElementById('printButton');
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        const setsSelect = document.getElementById("sets");
+        const showEnchanted = document.getElementById("showEnchanted");
+        const showPromo = document.getElementById("showPromo");
+        const cardsContainer = document.getElementById("cardsContainer");
+        const printButton = document.getElementById("printButton");
 
         const getSets = async () => {
-            const response = await fetch('https://api.lorcast.com/v0/sets');
+          const response = await fetch("https://api.lorcast.com/v0/sets");
 
-            return await response.json();
-        }
+          return await response.json();
+        };
 
         const addSetsToSelect = async () => {
-            const sets = await getSets();
+          const sets = await getSets();
 
-            sets.results.forEach(set => {
-                const optionElement = document.createElement('option');
-                optionElement.value = set.code;
-                optionElement.textContent = set.name;
+          sets.results.forEach((set) => {
+            const optionElement = document.createElement("option");
+            optionElement.value = set.code;
+            optionElement.textContent = set.name;
 
-                setsSelect.appendChild(optionElement);
-            });
+            setsSelect.appendChild(optionElement);
+          });
 
-            // Select the first set by default
-            setsSelect.selectedIndex = 1;
-            await renderSet(sets.results[0].code);
+          // Select the first set by default
+          setsSelect.selectedIndex = 1;
+          await renderSet(sets.results[0].code);
 
-            setsSelect.classList.remove('hidden');
-            printButton.classList.remove('hidden');
-        }
+          setsSelect.classList.remove("hidden");
+          printButton.classList.remove("hidden");
+        };
 
         const renderSet = async (code) => {
-            const response = await fetch(`https://api.lorcast.com/v0/sets/${code}/cards`);
-            const cards = await response.json();
+          const response = await fetch(
+            `https://api.lorcast.com/v0/sets/${code}/cards`
+          );
+          const cards = await response.json();
 
-            let fullGrayscale = false;
-            if (code === 'cp' || code === 'D23') {
-                fullGrayscale = true;
+          let fullGrayscale = false;
+          if (code === "cp" || code === "D23") {
+            fullGrayscale = true;
+          }
+
+          const showEnchantedCards = showEnchanted.checked;
+          const showPromoCards = showPromo.checked;
+
+          cards.forEach((card) => {
+            if (!showEnchantedCards && card.rarity === "Enchanted") {
+              return;
             }
 
-            const showEnchantedCards = showEnchanted.checked;
-            const showPromoCards = showPromo.checked;
+            if (!showPromoCards && card.rarity === "Promo") {
+              return;
+            }
 
-            cards.forEach(card => {
-                if (!showEnchantedCards && card.rarity === 'Enchanted') {
-                    return;
-                }
+            const cardElement = document.createElement("div");
+            cardElement.classList.add("card");
+            if (card.type.includes("Location")) {
+              cardElement.classList.add("location");
+            }
 
-                if (!showPromoCards && card.rarity === 'Promo') {
-                    return;
-                }
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "x";
+            deleteButton.classList.add("delete-button");
+            deleteButton.classList.add("display-only");
 
-                const cardElement = document.createElement('div');
-                cardElement.classList.add('card')
-                if (card.type.includes('Location')) {
-                    cardElement.classList.add('location');
-                }
+            const imgElement = document.createElement("img");
+            imgElement.src = card.image_uris.digital.large;
 
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'x';
-                deleteButton.classList.add('delete-button');
-                deleteButton.classList.add('display-only');
+            const grayscaleMask = document.createElement("div");
+            grayscaleMask.classList.add("grayscale-mask");
 
-                const imgElement = document.createElement('img');
-                imgElement.src = card.image_uris.digital.large;
+            if (fullGrayscale || card.rarity === "Enchanted") {
+              grayscaleMask.classList.add("full-grayscale-mask");
+            }
 
-                const grayscaleMask = document.createElement('div');
-                grayscaleMask.classList.add('grayscale-mask')
+            const grayscaleImg = document.createElement("img");
+            grayscaleImg.src = card.image_uris.digital.large;
 
-                if (fullGrayscale || card.rarity === 'Enchanted') {
-                    grayscaleMask.classList.add('full-grayscale-mask');
-                }
+            grayscaleMask.appendChild(grayscaleImg);
+            cardElement.appendChild(imgElement);
+            cardElement.appendChild(grayscaleMask);
+            cardElement.appendChild(deleteButton);
+            cardsContainer.appendChild(cardElement);
 
-                const grayscaleImg = document.createElement('img');
-                grayscaleImg.src = card.image_uris.digital.large;
-
-                grayscaleMask.appendChild(grayscaleImg);
-                cardElement.appendChild(imgElement);
-                cardElement.appendChild(grayscaleMask);
-                cardElement.appendChild(deleteButton);
-                cardsContainer.appendChild(cardElement);
-
-                cardElement.addEventListener('click', () => {
-                    // Remove the card from the container
-                    cardElement.remove();
-                });
+            cardElement.addEventListener("click", () => {
+              // Remove the card from the container
+              cardElement.remove();
             });
-        }
+          });
+        };
 
-        printButton.addEventListener('click', () => {
-            window.print();
+        printButton.addEventListener("click", () => {
+          window.print();
         });
 
         const selectSet = async () => {
-            const selectedSet = setsSelect.value;
+          const selectedSet = setsSelect.value;
 
-            // Clear the cards container
-            cardsContainer.innerHTML = ''
+          // Clear the cards container
+          cardsContainer.innerHTML = "";
 
-            if (selectedSet === '') {
-                return
-            }
+          if (selectedSet === "") {
+            return;
+          }
 
-            await renderSet(selectedSet)
-        }
+          await renderSet(selectedSet);
+        };
 
-        showEnchanted.addEventListener('change', selectSet)
+        showEnchanted.addEventListener("change", selectSet);
 
-        showPromo.addEventListener('change', selectSet)
+        showPromo.addEventListener("change", selectSet);
 
-        setsSelect.addEventListener('change', selectSet)
+        setsSelect.addEventListener("change", selectSet);
 
-        await addSetsToSelect()
-            .then(() => selectSet());
-    });
-</script>
-</body>
+        await addSetsToSelect().then(() => selectSet());
+      });
+    </script>
+  </body>
 </html>
