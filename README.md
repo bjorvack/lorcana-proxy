@@ -19,4 +19,4 @@ For any questions or feedback, please open an issue on the [GitHub repository](h
 
 ---
 
-Visit the live application at [bjorvack.github.com/lorcana-proxy](https://bjorvack.github.com/lorcana-proxy).
+Visit the live application at [bjorvack.github.io/lorcana-proxy](https://bjorvack.github.io/lorcana-proxy).
