@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TCG Card PDF Generator: Custom proxy list</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+    <div class="display-only">
+        <div>
+            <h1>TCG Card PDF Generator</h1>
+            <h2>Custom proxy list</h2>
+            <select name="sets" id="sets" class="hidden"></select>
+            <label>
+                <input type="checkbox" id="showEnchanted" checked/> Show Enchanted Cards
+            </label>
+            <label>
+                <input type="checkbox" id="showPromo" checked/> Show promo Cards
+            </label>
+            <div class="d-flex">
+                <button id="printButton" class="button">Generate PDF</button>
+                <a href="index.html" class="button">
+                    Back
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="cardsContainer">
+        <!-- Cards will be injected here -->
+    </div>
+</body>
+</html>
