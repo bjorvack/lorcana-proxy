@@ -15,13 +15,6 @@
         <div>
             <h1>TCG Card PDF Generator</h1>
             <h2>Custom proxy list</h2>
-            <select name="sets" id="sets" class="hidden"></select>
-            <label>
-                <input type="checkbox" id="showEnchanted" checked/> Show Enchanted Cards
-            </label>
-            <label>
-                <input type="checkbox" id="showPromo" checked/> Show promo Cards
-            </label>
             <div class="d-flex">
                 <button id="printButton" class="button">Generate PDF</button>
                 <a href="index.html" class="button">
@@ -32,8 +25,27 @@
         </div>
     </div>
 
-    <div id="cardsContainer">
+    <div id="cardsContainer" class="cards">
         <!-- Cards will be injected here -->
+        <button class="card-add" id="addCardButton">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+               <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"/>
+            </svg>
+            Add a card
+        </button>
     </div>
+
+    <dialog id="searchContainer">
+        <button data-role="close">x</button>
+        <div>
+            <label for="searchQuery">Search</label>
+            <input type="text" name="query" id="searchQuery" />
+            <div id="cardSelectionContainer" class="cards">
+
+            </div>
+        </div>
+    </dialog>
+
+    <script src="scripts/proxies.js"></script>
 </body>
 </html>

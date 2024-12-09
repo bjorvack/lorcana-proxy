@@ -5,6 +5,10 @@
         print-color-adjust: exact !important;
     }
 
+    .card-add {
+        display: none;
+    }
+
     .display-only {
         display: none;
     }
