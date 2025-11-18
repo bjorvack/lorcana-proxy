@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const setsSelect = document.getElementById("sets");
     const showEnchanted = document.getElementById("showEnchanted");
     const showPromo = document.getElementById("showPromo");
+    const useGrayscale = document.getElementById("useGrayscale");
     const cardsContainer = document.getElementById("cardsContainer");
     const printButton = document.getElementById("printButton");
 
@@ -42,6 +43,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const showEnchantedCards = showEnchanted.checked;
         const showPromoCards = showPromo.checked;
+        const useGrayscaleCards = useGrayscale.checked;
 
         cards.forEach((card) => {
             if (!showEnchantedCards && card.rarity === "Enchanted") {
@@ -65,20 +67,24 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const imgElement = document.createElement("img");
             imgElement.src = card.image_uris.digital.large;
+            cardElement.appendChild(imgElement);
 
-            const grayscaleMask = document.createElement("div");
-            grayscaleMask.classList.add("grayscale-mask");
+            if (useGrayscaleCards) {
+                const grayscaleMask = document.createElement("div");
+                grayscaleMask.classList.add("grayscale-mask");
 
-            if (fullGrayscale || card.rarity === "Enchanted") {
-                grayscaleMask.classList.add("full-grayscale-mask");
+
+                if (fullGrayscale || card.rarity === "Enchanted" || card.rarity === "Iconic") {
+                    grayscaleMask.classList.add("full-grayscale-mask");
+                }
+
+                const grayscaleImg = document.createElement("img");
+                grayscaleImg.src = card.image_uris.digital.large;
+
+                grayscaleMask.appendChild(grayscaleImg);
+                cardElement.appendChild(grayscaleMask);
             }
 
-            const grayscaleImg = document.createElement("img");
-            grayscaleImg.src = card.image_uris.digital.large;
-
-            grayscaleMask.appendChild(grayscaleImg);
-            cardElement.appendChild(imgElement);
-            cardElement.appendChild(grayscaleMask);
             cardElement.appendChild(deleteButton);
             cardsContainer.appendChild(cardElement);
 
@@ -111,6 +117,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     showPromo.addEventListener("change", selectSet);
 
     setsSelect.addEventListener("change", selectSet);
+
+    useGrayscale.addEventListener("change", selectSet);
 
     await addSetsToSelect().then(() => selectSet());
 });
